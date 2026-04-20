@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WestSide '84</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .hero-bg { background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://picsum.photos/id/1015/2000/1200') center/cover; }
+        .neon { text-shadow: 0 0 10px #f59e0b, 0 0 20px #f59e0b; }
+        .cart-item { transition: all 0.3s; }
+    </style>
+</head>
+<body class="bg-orange-50 text-gray-900">
+
+    <!-- NAVBAR -->
+    <nav class="bg-red-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-pizza-slice text-4xl"></i>
+                <h1 class="text-3xl font-bold neon">WestSide '84</h1>
+            </div>
+            <div class="flex gap-8 text-lg">
+                <a href="#" class="hover:underline">Accueil</a>
+                <a href="#menu" class="hover:underline">Menu</a>
+                <a href="#reserver" class="hover:underline">Réserver</a>
+                <a href="#commander" class="hover:underline font-bold">Commander en ligne</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleCart()" class="relative flex items-center gap-2 bg-white/20 hover:bg-white/30 px-5 py-2 rounded-full">
+                    <i class="fa-solid fa-cart-shopping text-xl"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-orange-400 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                </button>
+                <button onclick="showAdmin()" class="text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full flex items-center gap-2">
+                    <i class="fa-solid fa-lock"></i> Admin
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero-bg text-white py-32 text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <h1 class="text-7xl font-bold mb-4 neon">WestSide '84</h1>
+            <p class="text-4xl mb-6">Le goût qui parle de lui-même depuis 1984 🔥</p>
+            <p class="text-2xl">Pizza • Kebab • Commande en ligne • Livraison &amp; À emporter</p>
+            <div class="mt-10 flex justify-center gap-6">
+                <a href="#commander" class="bg-white text-red-600 font-bold text-2xl px-10 py-5 rounded-full hover:scale-105 transition">Commander maintenant</a>
+                <a href="#reserver" class="border-2 border-white font-bold text-2xl px-10 py-5 rounded-full hover:bg-white/20 transition">Réserver une table</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MENU & COMMANDES -->
+    <section id="menu" class="py-20 px-6 max-w-7xl mx-auto">
+        <h2 class="text-5xl font-bold text-center mb-4">Notre Menu</h2>
+        <p class="text-center text-xl mb-12 text-gray-600">Clique sur + pour ajouter au panier</p>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="menu-grid">
+            <!-- Items ajoutés par JS -->
+        </div>
+    </section>
+
+    <!-- RÉSERVATION (inchangée) -->
+    <section id="reserver" class="py-20 px-6 max-w-5xl mx-auto bg-gray-100">
+        <!-- ... (le même formulaire de réservation que précédemment) ... -->
+        <h2 class="text-5xl font-bold text-center mb-12">Réserve ta table maintenant</h2>
+        <div class="max-w-2xl mx-auto bg-white shadow-2xl rounded-3xl p-10">
+            <form id="reservationForm" class="space-y-8">
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Nom complet</label>
+                        <input type="text" id="nom" required class="w-full px-5 py-4 border rounded-2xl focus:outline-none focus:border-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Téléphone</label>
+                        <input type="tel" id="tel" required class="w-full px-5 py-4 border rounded-2xl focus:outline-none focus:border-orange-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-6">
+                    <div><label class="block text-sm font-medium mb-2">Date</label><input type="date" id="date" required class="w-full px-5 py-4 border rounded-2xl"></div>
+                    <div><label class="block text-sm font-medium mb-2">Heure</label><input type="time" id="heure" required class="w-full px-5 py-4 border rounded-2xl"></div>
+                    <div><label class="block text-sm font-medium mb-2">Personnes</label>
+                        <select id="personnes" required class="w-full px-5 py-4 border rounded-2xl">
+                            <option value="">Choisir</option>
+                            <option value="2">2 personnes</option><option value="3">3 personnes</option><option value="4">4 personnes</option><option value="5">5 personnes</option><option value="6">6+ personnes</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Commentaire</label>
+                    <textarea id="message" rows="3" class="w-full px-5 py-4 border rounded-3xl"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-2xl py-6 rounded-3xl">CONFIRMER MA RÉSERVATION</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- PANIER (modal) -->
+    <div id="cart-modal" class="hidden fixed inset-0 bg-black/70 flex items-end lg:items-center justify-center z-[100]">
+        <div class="bg-white w-full max-w-2xl rounded-t-3xl lg:rounded-3xl p-8 max-h-[90vh] overflow-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-3xl font-bold">Votre commande</h3>
+                <button onclick="toggleCart()" class="text-4xl leading-none">×</button>
+            </div>
+            <div id="cart-items" class="space-y-6"></div>
+            <div class="border-t pt-6 mt-6">
+                <div class="flex justify-between text-2xl font-bold">
+                    <span>Total</span>
+                    <span id="cart-total">0 €</span>
+                </div>
+            </div>
+            <button onclick="checkout()" class="w-full mt-8 bg-green-600 hover:bg-green-700 text-white text-2xl font-bold py-7 rounded-3xl">VALIDER LA COMMANDE</button>
+        </div>
+    </div>
+
+    <!-- ADMIN MODAL (Réservations + Commandes) -->
+    <div id="adminModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[200]">
+        <div class="bg-white text-black rounded-3xl p-8 max-w-6xl w-full mx-4 max-h-[95vh] overflow-auto">
+            <div class="flex justify-between mb-6">
+                <h3 class="text-3xl font-bold">WestSide '84 - Panneau Admin</h3>
+                <button onclick="hideAdmin()" class="text-4xl">✕</button>
+            </div>
+            
+            <div class="flex border-b mb-6">
+                <button onclick="switchTab(0)" id="tab-resa" class="tab-btn active px-8 py-4 font-bold">📋 Réservations</button>
+                <button onclick="switchTab(1)" id="tab-commandes" class="tab-btn px-8 py-4 font-bold">🛒 Commandes en ligne</button>
+            </div>
+
+            <!-- Tableau Réservations -->
+            <div id="tab-content-0">
+                <table class="w-full text-left" id="reservationsTable"></table>
+            </div>
+
+            <!-- Tableau Commandes -->
+            <div id="tab-content-1" class="hidden">
+                <table class="w-full text-left" id="commandesTable"></table>
+            </div>
+
+            <button onclick="clearAllData()" class="mt-8 text-red-600 text-sm flex items-center gap-2 hover:underline">
+                <i class="fa-solid fa-trash"></i> Tout supprimer (réservations + commandes)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // === DONNÉES ===
+        const ADMIN_PASSWORD = "west84";
+
+        let reservations = JSON.parse(localStorage.getItem("westside_reservations")) || [];
+        let orders = JSON.parse(localStorage.getItem("westside_orders")) || [];
+        let cart = [];
+
+        const menuItems = [
+            { id:1, name:"Pizza Kebab", price:13.90, desc:"Kebab, fromage, oignons, sauce blanche", img:"https://picsum.photos/id/1015/300/200" },
+            { id:2, name:"Pizza Margherita", price:10.90, desc:"Sauce tomate, mozzarella, basilic frais", img:"https://picsum.photos/id/292/300/200" },
+            { id:3, name:"Pizza 4 Fromages", price:14.90, desc:"Mozzarella, gorgonzola, chèvre, emmental", img:"https://picsum.photos/id/312/300/200" },
+            { id:4, name:"Kebab Classique", price:9.90, desc:"Viande, salade, tomate, oignon, sauce", img:"https://picsum.photos/id/870/300/200" },
+            { id:5, name:"Kebab Poulet", price:10.90, desc:"Poulet mariné, sauce spéciale", img:"https://picsum.photos/id/201/300/200" },
+            { id:6, name:"Frites Maison", price:4.90, desc:"Frites coupées à la main + sauce", img:"https://picsum.photos/id/292/300/200" },
+            { id:7, name:"Coca-Cola 33cl", price:3.50, desc:"", img:"https://picsum.photos/id/1005/300/200" },
+            { id:8, name:"Sprite 33cl", price:3.50, desc:"", img:"https://picsum.photos/id/133/300/200" }
+        ];
+
+        // === FONCTIONS PANIER ===
+        function saveData() {
+            localStorage.setItem("westside_reservations", JSON.stringify(reservations));
+            localStorage.setItem("westside_orders", JSON.stringify(orders));
+        }
+
+        function renderMenu() {
+            const grid = document.getElementById("menu-grid");
+            grid.innerHTML = menuItems.map(item => `
+                <div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition">
+                    <img src="${item.img}" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xl font-bold">${item.name}</h4>
+                                <p class="text-sm text-gray-600">${item.desc}</p>
+                            </div>
+                            <span class="text-2xl font-bold text-orange-500">${item.price}€</span>
+                        </div>
+                        <button onclick="addToCart(${item.id})" 
+                                class="mt-6 w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-plus"></i> AJOUTER
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const item = menuItems.find(i => i.id === id);
+            const existing = cart.find(i => i.id === id);
+            if (existing) existing.qty++;
+            else cart.push({...item, qty:1});
+            updateCartUI();
+            alert(`✅ ${item.name} ajouté au panier !`);
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, i) => sum + i.qty, 0);
+            document.getElementById("cart-count").textContent = count;
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById("cart-modal");
+            const container = document.getElementById("cart-items");
+            const totalEl = document.getElementById("cart-total");
+
+            if (modal.classList.contains("hidden")) {
+                container.innerHTML = cart.length === 0 
+                    ? `<p class="text-center py-12 text-gray-400">Votre panier est vide...</p>`
+                    : cart.map((item, idx) => `
+                        <div class="cart-item flex gap-4 border-b pb-6">
+                            <div class="flex-1">
+                                <h5 class="font-bold">${item.name}</h5>
+                                <p class="text-sm">${item.price}€ × ${item.qty}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-xl">${(item.price * item.qty).toFixed(2)}€</div>
+                                <div class="flex gap-3 mt-3">
+                                    <button onclick="changeQty(${idx}, -1)" class="w-8 h-8 border rounded-xl">-</button>
+                                    <span class="flex items-center font-bold">${item.qty}</span>
+                                    <button onclick="changeQty(${idx}, 1)" class="w-8 h-8 border rounded-xl">+</button>
+                                    <button onclick="removeFromCart(${idx})" class="ml-4 text-red-500"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+                totalEl.textContent = total.toFixed(2) + " €";
+                modal.classList.remove("hidden");
+            } else {
+                modal.classList.add("hidden");
+            }
+        }
+
+        function changeQty(idx, change) {
+            cart[idx].qty += change;
+            if (cart[idx].qty < 1) cart.splice(idx, 1);
+            toggleCart(); // refresh
+            updateCartUI();
+        }
+
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
+            toggleCart();
+            updateCartUI();
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+
+            const nom = prompt("Votre nom complet :") || "Client anonyme";
+            const tel = prompt("Votre numéro de téléphone :") || "Non renseigné";
+
+            const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+            const newOrder = {
+                timestamp: new Date().toLocaleString('fr-FR'),
+                nom: nom,
+                tel: tel,
+                items: cart.map(i => `${i.name} ×${i.qty}`),
+                total: total.toFixed(2)
+            };
+
+            orders.unshift(newOrder);
+            saveData();
+
+            alert(`🎉 Commande validée !\nTotal : ${total.toFixed(2)}€\nTu peux la voir dans le panneau Admin.`);
+
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        // === ADMIN ===
+        function showAdmin() {
+            const pass = prompt("🔑 Mot de passe Admin WestSide '84 :");
+            if (pass === ADMIN_PASSWORD) {
+                document.getElementById("adminModal").classList.remove("hidden");
+                renderAdmin();
+            } else if (pass !== null) alert("❌ Mauvais mot de passe !");
+        }
+
+        function hideAdmin() {
+            document.getElementById("adminModal").classList.add("hidden");
+        }
+
+        function switchTab(n) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'border-b-4', 'border-red-600'));
+            document.getElementById(n === 0 ? 'tab-resa' : 'tab-commandes').classList.add('active', 'border-b-4', 'border-red-600');
+            document.getElementById('tab-content-0').classList.toggle('hidden', n !== 0);
+            document.getElementById('tab-content-1').classList.toggle('hidden', n !== 1);
+        }
+
+        function renderAdmin() {
+            // Tableau Réservations
+            let htmlResa = `<thead><tr class="bg-gray-100"><th class="p-4">Date</th><th class="p-4">Heure</th><th class="p-4">Nom</th><th class="p-4">Téléphone</th><th class="p-4">Personnes</th><th class="p-4">Message</th><th class="p-4">Action</th></tr></thead><tbody>`;
+            reservations.forEach((r, i) => {
+                htmlResa += `<tr class="border-b"><td class="p-4">${r.date}</td><td class="p-4">${r.heure}</td><td class="p-4">${r.nom}</td><td class="p-4">${r.tel}</td><td class="p-4">${r.personnes}</td><td class="p-4">${r.message||'-'}</td><td class="p-4"><button onclick="deleteResa(${i})" class="text-red-500">🗑</button></td></tr>`;
+            });
+            htmlResa += `</tbody>`;
+            document.getElementById("reservationsTable").innerHTML = htmlResa || `<p class="p-8 text-center">Aucune réservation</p>`;
+
+            // Tableau Commandes
+            let htmlCmd = `<thead><tr class="bg-gray-100"><th class="p-4">Date</th><th class="p-4">Client</th><th class="p-4">Téléphone</th><th class="p-4">Commande</th><th class="p-4 text-right">Total</th><th class="p-4">Action</th></tr></thead><tbody>`;
+            orders.forEach((o, i) => {
+                htmlCmd += `<tr class="border-b"><td class="p-4">${o.timestamp}</td><td class="p-4">${o.nom}</td><td class="p-4">${o.tel}</td><td class="p-4">${o.items.join('<br>')}</td><td class="p-4 text-right font-bold">${o.total}€</td><td class="p-4"><button onclick="deleteOrder(${i})" class="text-red-500">🗑</button></td></tr>`;
+            });
+            htmlCmd += `</tbody>`;
+            document.getElementById("commandesTable").innerHTML = htmlCmd || `<p class="p-8 text-center">Aucune commande</p>`;
+        }
+
+        function deleteResa(i) { reservations.splice(i,1); saveData(); renderAdmin(); }
+        function deleteOrder(i) { orders.splice(i,1); saveData(); renderAdmin(); }
+
+        function clearAllData() {
+            if (confirm("Tout supprimer ? (réservations + commandes)")) {
+                reservations = []; orders = []; saveData(); renderAdmin();
+            }
+        }
+
+        // === FORMULAIRE RÉSERVATION ===
+        document.getElementById("reservationForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const newRes = {
+                date: document.getElementById("date").value,
+                heure: document.getElementById("heure").value,
+                nom: document.getElementById("nom").value,
+                tel: document.getElementById("tel").value,
+                personnes: document.getElementById("personnes").value,
+                message: document.getElementById("message").value
+            };
+            reservations.unshift(newRes);
+            saveData();
+            alert("✅ Réservation enregistrée !");
+            this.reset();
+        });
+
+        // === INIT ===
+        renderMenu();
+        console.log("%cWestSide '84 - Commandes en ligne + Réservations activées !", "color:#f59e0b; font-size:15px");
+    </script>
+</body>
+</html>
