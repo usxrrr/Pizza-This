@@ -138,12 +138,9 @@
                 <button onclick="switchTab(1)" id="tab-commandes" class="tab-btn px-8 py-4 font-bold">🛒 Commandes en ligne</button>
             </div>
 
-            <!-- Tableau Réservations -->
             <div id="tab-content-0">
                 <table class="w-full text-left" id="reservationsTable"></table>
             </div>
-
-            <!-- Tableau Commandes -->
             <div id="tab-content-1" class="hidden">
                 <table class="w-full text-left" id="commandesTable"></table>
             </div>
@@ -155,126 +152,152 @@
     </div>
 
     <script>
-        // === MOT DE PASSE ADMIN ===
         const ADMIN_PASSWORD = "west84";
 
-        // === DONNÉES SAUVEGARDÉES ===
         let reservations = JSON.parse(localStorage.getItem("westside_reservations")) || [];
         let orders = JSON.parse(localStorage.getItem("westside_orders")) || [];
         let cart = [];
 
-        // === MENU EXACTEMENT COMME TU L'AS DEMANDÉ ===
+        // MENU EXACTEMENT COMME TU L'AS ÉCRIT
         const menuCategories = {
             "PIZZAS": [
-                { id: 1, name: "Capricciosa", price: 13.00, desc: "" },
-                { id: 2, name: "Diavola", price: 12.50, desc: "" },
-                { id: 3, name: "Margherita", price: 10.00, desc: "" },
-                { id: 4, name: "Marinara", price: 8.50, desc: "" },
-                { id: 5, name: "Prosciutto e Funghi", price: 11.50, desc: "" },
-                { id: 6, name: "Vegetariana", price: 12.00, desc: "" }
+                { id: 1, name: "Capricciosa", price: 13.00 },
+                { id: 2, name: "Diavola", price: 12.50 },
+                { id: 3, name: "Margherita", price: 10.00 },
+                { id: 4, name: "Marinara", price: 8.50 },
+                { id: 5, name: "Prosciutto e Funghi", price: 11.50 },
+                { id: 6, name: "Vegetariana", price: 12.00 }
             ],
             "PLATS": [
-                { id: 7, name: "Alla Vodka", price: 14.50, desc: "" },
-                { id: 8, name: "Bolognese", price: 15.00, desc: "" },
-                { id: 9, name: "Calamari Marinara", price: 16.50, desc: "" },
-                { id: 10, name: "Pescatore", price: 17.00, desc: "" }
+                { id: 7, name: "Alla Vodka", price: 14.50 },
+                { id: 8, name: "Bolognese", price: 15.00 },
+                { id: 9, name: "Calamari Marinara", price: 16.50 },
+                { id: 10, name: "Pescatore", price: 17.00 }
             ],
             "DESSERTS": [
-                { id: 11, name: "Gelato Chocolat & Vanille", price: 6.50, desc: "" },
-                { id: 12, name: "Médley de Fruits Frais", price: 5.50, desc: "" },
-                { id: 13, name: "Tiramisu", price: 7.00, desc: "" }
+                { id: 11, name: "Gelato Chocolat & Vanille", price: 6.50 },
+                { id: 12, name: "Médley de Fruits Frais", price: 5.50 },
+                { id: 13, name: "Tiramisu", price: 7.00 }
             ],
-            "BIÈRES": [
-                { id: 14, name: "A.M.", price: 5.00, desc: "" },
-                { id: 15, name: "Dusche Gold", price: 5.50, desc: "" },
-                { id: 16, name: "Logger", price: 5.00, desc: "" },
-                { id: 17, name: "Pilswasser", price: 4.50, desc: "" }
-            ],
-            "BOISSONS FRAÎCHES": [
-                { id: 18, name: "Orangina / Tang", price: 3.50, desc: "" },
-                { id: 19, name: "Sprite", price: 3.50, desc: "" },
-                { id: 20, name: "eCola", price: 3.50, desc: "" },
-                { id: 21, name: "eCola Light", price: 3.50, desc: "" }
-            ],
-            "BOISSONS CHAUDES": [
-                { id: 22, name: "Cappuccino", price: 4.50, desc: "" },
-                { id: 23, name: "Latte Macchiato", price: 4.50, desc: "" }
-            ],
-            "RHUMS": [
-                { id: 24, name: "Cherenkov", price: 7.00, desc: "" },
-                { id: 25, name: "Ragga Rum", price: 7.00, desc: "" }
+            "BOISSONS": [
+                { subcategory: "Bières", items: [
+                    { id: 14, name: "A.M.", price: 5.00 },
+                    { id: 15, name: "Dusche Gold", price: 5.50 },
+                    { id: 16, name: "Logger", price: 5.00 },
+                    { id: 17, name: "Pilswasser", price: 4.50 }
+                ]},
+                { subcategory: "Boissons fraîches", items: [
+                    { id: 18, name: "Orangina / Tang", price: 3.50 },
+                    { id: 19, name: "Sprite", price: 3.50 },
+                    { id: 20, name: "eCola", price: 3.50 },
+                    { id: 21, name: "eCola Light", price: 3.50 }
+                ]},
+                { subcategory: "Boissons chaudes", items: [
+                    { id: 22, name: "Cappuccino", price: 4.50 },
+                    { id: 23, name: "Latte Macchiato", price: 4.50 }
+                ]},
+                { subcategory: "Rhums", items: [
+                    { id: 24, name: "Cherenkov", price: 7.00 },
+                    { id: 25, name: "Ragga Rum", price: 7.00 }
+                ]}
             ]
         };
 
-        // === SAUVEGARDE ===
         function saveData() {
             localStorage.setItem("westside_reservations", JSON.stringify(reservations));
             localStorage.setItem("westside_orders", JSON.stringify(orders));
         }
 
-        // === AFFICHAGE MENU PAR CATÉGORIES ===
+        // AFFICHAGE DU MENU COMPLET
         function renderMenu() {
             const container = document.getElementById("menu-grid");
             container.innerHTML = "";
 
             Object.keys(menuCategories).forEach(category => {
-                const items = menuCategories[category];
-                
+                const data = menuCategories[category];
+
                 let html = `
                     <div class="menu-category">
                         <h3 class="text-4xl font-bold mb-8 text-red-600 border-b border-orange-300 pb-3">${category}</h3>
-                        <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 `;
 
-                items.forEach(item => {
-                    const priceDisplay = item.price.toFixed(2).replace('.', ',');
-                    html += `
-                        <div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition">
-                            <div class="h-48 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-7xl">
-                                🍕
-                            </div>
-                            <div class="p-6">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h4 class="text-2xl font-bold">${item.name}</h4>
+                if (category === "BOISSONS") {
+                    // Sous-catégories pour les boissons
+                    data.forEach(sub => {
+                        html += `<h4 class="text-2xl font-semibold mt-8 mb-4">${sub.subcategory}</h4>`;
+                        html += `<div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">`;
+                        sub.items.forEach(item => {
+                            const priceDisplay = item.price.toFixed(2).replace('.', ',');
+                            html += `
+                                <div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition">
+                                    <div class="h-48 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-6xl">🥤</div>
+                                    <div class="p-6">
+                                        <div class="flex justify-between">
+                                            <h4 class="text-2xl font-bold">${item.name}</h4>
+                                            <span class="text-3xl font-bold text-orange-500">${priceDisplay} €</span>
+                                        </div>
+                                        <button onclick="addToCart(${item.id})" class="mt-6 w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3">
+                                            <i class="fa-solid fa-plus"></i> AJOUTER
+                                        </button>
                                     </div>
-                                    <span class="text-3xl font-bold text-orange-500">${priceDisplay} €</span>
                                 </div>
-                                <button onclick="addToCart(${item.id})" 
-                                        class="mt-6 w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3">
-                                    <i class="fa-solid fa-plus"></i> AJOUTER AU PANIER
-                                </button>
+                            `;
+                        });
+                        html += `</div>`;
+                    });
+                } else {
+                    // Catégories normales
+                    html += `<div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">`;
+                    data.forEach(item => {
+                        const priceDisplay = item.price.toFixed(2).replace('.', ',');
+                        const emoji = category === "PIZZAS" ? "🍕" : category === "PLATS" ? "🍝" : "🍰";
+                        html += `
+                            <div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition">
+                                <div class="h-48 bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-7xl">${emoji}</div>
+                                <div class="p-6">
+                                    <div class="flex justify-between">
+                                        <h4 class="text-2xl font-bold">${item.name}</h4>
+                                        <span class="text-3xl font-bold text-orange-500">${priceDisplay} €</span>
+                                    </div>
+                                    <button onclick="addToCart(${item.id})" class="mt-6 w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3">
+                                        <i class="fa-solid fa-plus"></i> AJOUTER
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
-
-                html += `</div></div>`;
+                        `;
+                    });
+                    html += `</div>`;
+                }
+                html += `</div>`;
                 container.innerHTML += html;
             });
         }
 
-        // === PANIER ===
         function addToCart(id) {
-            let itemFound = false;
+            let itemFound = null;
             Object.values(menuCategories).forEach(category => {
-                const item = category.find(i => i.id === id);
-                if (item) {
-                    const existing = cart.find(cartItem => cartItem.id === id);
-                    if (existing) {
-                        existing.qty++;
-                    } else {
-                        cart.push({ ...item, qty: 1 });
-                    }
-                    itemFound = true;
-                    alert(`✅ ${item.name} ajouté au panier !`);
+                if (Array.isArray(category)) {
+                    const found = category.find(i => i.id === id);
+                    if (found) itemFound = found;
+                } else if (category === menuCategories["BOISSONS"]) {
+                    category.forEach(sub => {
+                        const found = sub.items.find(i => i.id === id);
+                        if (found) itemFound = found;
+                    });
                 }
             });
-            if (itemFound) updateCartUI();
+
+            if (itemFound) {
+                const existing = cart.find(i => i.id === id);
+                if (existing) existing.qty++;
+                else cart.push({ ...itemFound, qty: 1 });
+                updateCartUI();
+                alert(`✅ ${itemFound.name} ajouté au panier !`);
+            }
         }
 
         function updateCartUI() {
-            const count = cart.reduce((sum, i) => sum + i.qty, 0);
+            const count = cart.reduce((sum, i) => sum + (i.qty || 1), 0);
             document.getElementById("cart-count").textContent = count;
         }
 
@@ -283,40 +306,38 @@
             const container = document.getElementById("cart-items");
             const totalEl = document.getElementById("cart-total");
 
-            if (!modal.classList.contains("hidden")) {
-                modal.classList.add("hidden");
-                return;
-            }
-
-            if (cart.length === 0) {
-                container.innerHTML = `<p class="text-center py-12 text-gray-400 text-xl">Votre panier est vide...</p>`;
-            } else {
-                container.innerHTML = cart.map((item, idx) => {
-                    const priceDisplay = (item.price * item.qty).toFixed(2).replace('.', ',');
-                    return `
-                        <div class="cart-item flex gap-4 border-b pb-6">
-                            <div class="flex-1">
-                                <h5 class="font-bold text-xl">${item.name}</h5>
-                                <p class="text-sm text-gray-500">${item.price.toFixed(2).replace('.', ',')} € × ${item.qty}</p>
-                            </div>
-                            <div class="text-right">
-                                <div class="font-bold text-2xl">${priceDisplay} €</div>
-                                <div class="flex gap-3 mt-3">
-                                    <button onclick="changeQty(${idx}, -1)" class="w-9 h-9 border rounded-2xl text-xl flex items-center justify-center hover:bg-gray-100">-</button>
-                                    <span class="flex items-center font-bold text-xl px-3">${item.qty}</span>
-                                    <button onclick="changeQty(${idx}, 1)" class="w-9 h-9 border rounded-2xl text-xl flex items-center justify-center hover:bg-gray-100">+</button>
-                                    <button onclick="removeFromCart(${idx})" class="ml-4 text-red-500 text-2xl"><i class="fa-solid fa-trash"></i></button>
+            if (modal.classList.contains("hidden")) {
+                if (cart.length === 0) {
+                    container.innerHTML = `<p class="text-center py-12 text-gray-400 text-xl">Votre panier est vide...</p>`;
+                } else {
+                    container.innerHTML = cart.map((item, idx) => {
+                        const subtotal = (item.price * item.qty).toFixed(2).replace('.', ',');
+                        return `
+                            <div class="cart-item flex gap-4 border-b pb-6">
+                                <div class="flex-1">
+                                    <h5 class="font-bold text-xl">${item.name}</h5>
+                                    <p class="text-sm text-gray-500">${item.price.toFixed(2).replace('.', ',')} € × ${item.qty}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-2xl">${subtotal} €</div>
+                                    <div class="flex gap-3 mt-3">
+                                        <button onclick="changeQty(${idx}, -1)" class="w-9 h-9 border rounded-2xl text-xl flex items-center justify-center hover:bg-gray-100">-</button>
+                                        <span class="flex items-center font-bold text-xl px-3">${item.qty}</span>
+                                        <button onclick="changeQty(${idx}, 1)" class="w-9 h-9 border rounded-2xl text-xl flex items-center justify-center hover:bg-gray-100">+</button>
+                                        <button onclick="removeFromCart(${idx})" class="ml-4 text-red-500 text-2xl"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
-                }).join('');
+                        `;
+                    }).join('');
+                }
+
+                const total = cart.reduce((sum, i) => sum + i.price * (i.qty || 1), 0);
+                totalEl.innerHTML = `${total.toFixed(2).replace('.', ',')} <span class="text-xl">€</span>`;
+                modal.classList.remove("hidden");
+            } else {
+                modal.classList.add("hidden");
             }
-
-            const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-            totalEl.innerHTML = `${total.toFixed(2).replace('.', ',')} <span class="text-xl">€</span>`;
-
-            modal.classList.remove("hidden");
         }
 
         function changeQty(idx, change) {
@@ -334,44 +355,38 @@
 
         function checkout() {
             if (cart.length === 0) return;
-
             const nom = prompt("Votre nom complet :") || "Client anonyme";
             const tel = prompt("Votre numéro de téléphone :") || "Non renseigné";
-
-            const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+            const total = cart.reduce((sum, i) => sum + i.price * (i.qty || 1), 0);
 
             const newOrder = {
                 timestamp: new Date().toLocaleString('fr-FR'),
                 nom: nom,
                 tel: tel,
-                items: cart.map(i => `${i.name} ×${i.qty}`),
+                items: cart.map(i => `${i.name} ×${i.qty || 1}`),
                 total: total.toFixed(2)
             };
 
             orders.unshift(newOrder);
             saveData();
 
-            alert(`🎉 Commande validée pour ${nom} !\nTotal : ${total.toFixed(2).replace('.', ',')} €\nTu peux la voir dans le panneau Admin.`);
+            alert(`🎉 Commande validée pour ${nom} !\nTotal : ${total.toFixed(2).replace('.', ',')} €\nVisible dans l'Admin.`);
 
             cart = [];
             updateCartUI();
             toggleCart();
         }
 
-        // === ADMIN ===
+        // ADMIN
         function showAdmin() {
             const pass = prompt("🔑 Mot de passe Admin WestSide '84 :");
             if (pass === ADMIN_PASSWORD) {
                 document.getElementById("adminModal").classList.remove("hidden");
                 renderAdmin();
-            } else if (pass !== null) {
-                alert("❌ Mauvais mot de passe !");
-            }
+            } else if (pass !== null) alert("❌ Mauvais mot de passe !");
         }
 
-        function hideAdmin() {
-            document.getElementById("adminModal").classList.add("hidden");
-        }
+        function hideAdmin() { document.getElementById("adminModal").classList.add("hidden"); }
 
         function switchTab(n) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'border-b-4', 'border-red-600'));
@@ -381,33 +396,30 @@
         }
 
         function renderAdmin() {
-            // Réservations
             let htmlResa = `<thead><tr class="bg-gray-100"><th class="p-4">Date</th><th class="p-4">Heure</th><th class="p-4">Nom</th><th class="p-4">Téléphone</th><th class="p-4">Personnes</th><th class="p-4">Message</th><th class="p-4 text-center">Action</th></tr></thead><tbody>`;
             reservations.forEach((r, i) => {
                 htmlResa += `<tr class="border-b"><td class="p-4">${r.date}</td><td class="p-4">${r.heure}</td><td class="p-4">${r.nom}</td><td class="p-4">${r.tel}</td><td class="p-4">${r.personnes}</td><td class="p-4">${r.message||'-'}</td><td class="p-4 text-center"><button onclick="deleteResa(${i})" class="text-red-500 text-2xl">🗑</button></td></tr>`;
             });
             htmlResa += `</tbody>`;
-            document.getElementById("reservationsTable").innerHTML = htmlResa;
+            document.getElementById("reservationsTable").innerHTML = htmlResa || `<p class="p-8 text-center">Aucune réservation</p>`;
 
-            // Commandes en ligne
             let htmlCmd = `<thead><tr class="bg-gray-100"><th class="p-4">Date</th><th class="p-4">Client</th><th class="p-4">Téléphone</th><th class="p-4">Commande</th><th class="p-4 text-right">Total</th><th class="p-4 text-center">Action</th></tr></thead><tbody>`;
             orders.forEach((o, i) => {
                 htmlCmd += `<tr class="border-b"><td class="p-4">${o.timestamp}</td><td class="p-4">${o.nom}</td><td class="p-4">${o.tel}</td><td class="p-4">${o.items.join('<br>')}</td><td class="p-4 text-right font-bold">${o.total.replace('.', ',')} €</td><td class="p-4 text-center"><button onclick="deleteOrder(${i})" class="text-red-500 text-2xl">🗑</button></td></tr>`;
             });
             htmlCmd += `</tbody>`;
-            document.getElementById("commandesTable").innerHTML = htmlCmd;
+            document.getElementById("commandesTable").innerHTML = htmlCmd || `<p class="p-8 text-center">Aucune commande</p>`;
         }
 
         function deleteResa(i) { reservations.splice(i,1); saveData(); renderAdmin(); }
         function deleteOrder(i) { orders.splice(i,1); saveData(); renderAdmin(); }
 
         function clearAllData() {
-            if (confirm("⚠️ Tout supprimer (réservations + commandes) ? Action irréversible !")) {
+            if (confirm("⚠️ Tout supprimer (réservations + commandes) ?")) {
                 reservations = []; orders = []; saveData(); renderAdmin();
             }
         }
 
-        // === FORMULAIRE RÉSERVATION ===
         document.getElementById("reservationForm").addEventListener("submit", function(e) {
             e.preventDefault();
             const newRes = {
@@ -424,9 +436,9 @@
             this.reset();
         });
 
-        // === LANCEMENT ===
+        // LANCEMENT
         renderMenu();
-        console.log("%cWestSide '84 - Menu complet chargé avec succès !", "color:#f59e0b; font-size:15px");
+        console.log("%cWestSide '84 - Menu 100% complet chargé !", "color:#f59e0b; font-size:15px");
     </script>
 </body>
 </html>
